@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import pandas as pd
 import joblib
 
@@ -19,10 +20,10 @@ data = pd.read_csv("data/cleaned_fashion_data.csv")
 encoder = joblib.load("models/encoder.pkl")
 encoded_features = joblib.load("models/encoded_features.pkl")
 
-
 @app.get("/")
 def home():
-    return {"message": "AI Fashion Stylist API is running!"}
+    from fastapi.responses import FileResponse
+    return FileResponse("frontend/index.html")
 
 
 @app.get("/data-info")
@@ -179,3 +180,4 @@ def recommend(preferences: UserPreferences):
             "Products-href"
         ]
     ].to_dict(orient="records")
+app.mount("/static", StaticFiles(directory=".", html=True), name="static")
